@@ -7,18 +7,27 @@ import './App.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userType, setUserType] = useState(null); // 'admin' | 'tecnico'
   const [currentView, setCurrentView] = useState('grid'); // 'grid' | 'form'
   const [editingData, setEditingData] = useState(null);
 
-  const handleLogin = (success) => {
+  const handleLogin = (success, username) => {
     if (success) {
       setIsAuthenticated(true);
-      setCurrentView('grid'); // Ir al grid después del login
+      setUserType(username);
+      
+      // Determinar vista inicial según tipo de usuario
+      if (username === 'admin') {
+        setCurrentView('grid'); // Admin va al grid/filtros
+      } else if (username === 'tecnico') {
+        setCurrentView('form'); // Técnico va directo al formulario
+      }
     }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setUserType(null);
     setCurrentView('grid');
     setEditingData(null);
   };
@@ -35,7 +44,13 @@ function App() {
 
   const handleCancel = () => {
     setEditingData(null);
-    setCurrentView('grid');
+    // Determinar a dónde regresar según el tipo de usuario
+    if (userType === 'admin') {
+      setCurrentView('grid'); // Admin regresa al grid
+    } else if (userType === 'tecnico') {
+      // Técnico puede ir al grid para ver sus registros o mantenerse en form
+      setCurrentView('grid'); // Por ahora regresa al grid también
+    }
   };
 
   // Si no está autenticado, mostrar login
@@ -56,12 +71,14 @@ function App() {
             onAddNew={handleAddNew}
             onEdit={handleEdit}
             onLogout={handleLogout}
+            userType={userType}
           />
         ) : (
           <MachineForm 
             onLogout={handleLogout}
             onCancel={handleCancel}
             editData={editingData}
+            userType={userType}
           />
         )}
       </div>

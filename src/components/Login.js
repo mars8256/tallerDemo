@@ -28,8 +28,10 @@ function Login({ onLogin }) {
     
     // Simular delay de autenticación
     setTimeout(() => {
-      if (credentials.username === 'admin' && credentials.password === 'admin') {
-        onLogin(true);
+      if ((credentials.username === 'admin' && credentials.password === 'admin') ||
+          (credentials.username === 'tecnico' && credentials.password === 'tecnico')) {
+        // Pasar el tipo de usuario al callback
+        onLogin(true, credentials.username);
       } else {
         setError('Usuario o contraseña incorrectos');
       }
@@ -87,9 +89,8 @@ function Login({ onLogin }) {
 
         <div className="login-footer">
           <small>
-            <strong>Credenciales de prueba:</strong><br />
-            Usuario: admin<br />
-            Contraseña: admin
+            <strong>Credenciales disponibles:</strong><br />
+            <span style={{ color: '#27ae60', fontWeight: 'bold' }}>Técnico:</span> tecnico / tecnico
           </small>
         </div>
       </div>

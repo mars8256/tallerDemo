@@ -21,12 +21,41 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
+.header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .datagrid-title {
   color: #2c3e50;
   margin: 0;
   font-size: 2rem;
   font-weight: 300;
   letter-spacing: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-badge {
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  align-self: flex-start;
+}
+
+.user-admin {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+}
+
+.user-tecnico {
+  background: linear-gradient(135deg, #27ae60, #229954);
+  color: white;
 }
 
 .logout-btn {
@@ -358,8 +387,18 @@
     text-align: center;
   }
   
+  .header-info {
+    align-items: center;
+    text-align: center;
+  }
+  
   .datagrid-title {
     font-size: 1.5rem;
+    align-items: center;
+  }
+  
+  .user-badge {
+    align-self: center;
   }
   
   .filters-form {

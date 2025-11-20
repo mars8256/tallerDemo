@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import './MachineForm.css';
 
-function MachineForm({ onLogout, onCancel, editData = null }) {
+function MachineForm({ onLogout, onCancel, editData = null, userType }) {
   const { addRecord, updateRecord } = useData();
   const [formData, setFormData] = useState({
     maquina: '',
@@ -114,13 +114,25 @@ function MachineForm({ onLogout, onCancel, editData = null }) {
   return (
     <div className="machine-form-container">
       <div className="form-header">
-        <h1 className="form-title">
-          {editData ? 'Editar Registro de Máquina' : 'Nuevo Registro de Máquina'}
-        </h1>
+        <div className="header-info">
+          <h1 className="form-title">
+            {editData ? 'Editar Registro de Máquina' : 'Nuevo Registro de Máquina'}
+          </h1>
+          <span className={`user-badge user-${userType}`}>
+            {userType === 'admin' ? '👑 Administrador' : '🔧 Técnico'}
+          </span>
+        </div>
         <div className="header-actions">
-          <button onClick={onCancel} className="cancel-btn">
-            Volver a Lista
-          </button>
+          {userType === 'admin' && (
+            <button onClick={onCancel} className="cancel-btn">
+              Volver a Lista
+            </button>
+          )}
+          {userType === 'tecnico' && (
+            <button onClick={onCancel} className="cancel-btn">
+              Ver Registros
+            </button>
+          )}
           <button onClick={onLogout} className="logout-btn">
             Cerrar Sesión
           </button>
@@ -265,7 +277,7 @@ function MachineForm({ onLogout, onCancel, editData = null }) {
               Limpiar
             </button>
             <button type="button" onClick={onCancel} className="btn btn-tertiary">
-              Cancelar
+              {userType === 'admin' ? 'Cancelar' : 'Ver Lista'}
             </button>
             <button type="submit" className="btn btn-primary">
               {editData ? 'Actualizar Registro' : 'Guardar Registro'}

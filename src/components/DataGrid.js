@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import './DataGrid.css';
 
-function DataGrid({ onAddNew, onLogout, onEdit }) {
+function DataGrid({ onAddNew, onLogout, onEdit, userType }) {
   const { data, filterData, getUniqueOperators, totalRecords, deleteRecord } = useData();
   const [filteredData, setFilteredData] = useState([]);
   const [filters, setFilters] = useState({
@@ -79,7 +79,14 @@ function DataGrid({ onAddNew, onLogout, onEdit }) {
     <div className="datagrid-container">
       {/* Header */}
       <div className="datagrid-header">
-        <h1 className="datagrid-title">Gestión de Máquinas</h1>
+        <div className="header-info">
+          <h1 className="datagrid-title">
+            Gestión de Máquinas 
+            <span className={`user-badge user-${userType}`}>
+              {userType === 'admin' ? '👑 Administrador' : '🔧 Técnico'}
+            </span>
+          </h1>
+        </div>
         <button onClick={onLogout} className="logout-btn">
           Cerrar Sesión
         </button>
@@ -87,7 +94,9 @@ function DataGrid({ onAddNew, onLogout, onEdit }) {
 
       {/* Filtros */}
       <div className="filters-section">
-        <h2 className="filters-title">Filtros de Búsqueda</h2>
+        <h2 className="filters-title">
+          {userType === 'admin' ? 'Filtros de Búsqueda - Vista Administrativa' : 'Consulta de Registros'}
+        </h2>
         <div className="filters-form">
           <div className="filter-group">
             <label htmlFor="operador">Operador:</label>
