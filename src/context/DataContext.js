@@ -79,9 +79,61 @@ export const DataProvider = ({ children }) => {
   ]);
 
   const [nextId, setNextId] = useState(6);
+  
+  // Estados para funcionalidad offline
+  const [offlineQueue, setOfflineQueue] = useState([]);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  // Manejar cambios en el estado de conexión
+  React.useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncOfflineData();
+    };
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Sincronizar datos offline cuando se recupera la conexión
+  const syncOfflineData = async () => {
+    if (offlineQueue.length > 0) {
+      console.log('Sincronizando', offlineQueue.length, 'registros pendientes...');
+      
+      for (const item of offlineQueue) {
+        try {
+          await sendToGoogleSheet(item.data);
+          console.log('Registro sincronizado:', item.id);
+        } catch (error) {
+          console.error('Error al sincronizar registro:', item.id, error);
+        }
+      }
+      
+      setOfflineQueue([]);
+      console.log('Sincronización completada');
+    }
+  };
 
   // Función para enviar datos a Google Apps Script
   const sendToGoogleSheet = async (data) => {
+    // Si está offline, agregar a la cola
+    if (!isOnline) {
+      const queueItem = {
+        id: data.id || Date.now(),
+        data,
+        timestamp: new Date().toISOString()
+      };
+      setOfflineQueue(prev => [...prev, queueItem]);
+      console.log('Sin conexión: Datos agregados a cola de sincronización');
+      return false;
+    }
+
     try {
       await fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: "POST",
@@ -96,6 +148,17 @@ export const DataProvider = ({ children }) => {
       return true;
     } catch (error) {
       console.error('Error al enviar datos a Google Sheets:', error);
+      
+      // Agregar a cola offline si falla la conexión
+      const queueItem = {
+        id: data.id || Date.now(),
+        data,
+        timestamp: new Date().toISOString(),
+        error: error.message
+      };
+      setOfflineQueue(prev => [...prev, queueItem]);
+      console.log('Error de conexión: Datos agregados a cola de sincronización');
+      
       return false;
     }
   };
@@ -209,6 +272,18 @@ export const DataProvider = ({ children }) => {
     return [...new Set(data.map(item => item.causa))];
   };
 
+  // Función para obtener información del estado offline
+  const getOfflineStatus = () => ({
+    isOnline,
+    pendingSync: offlineQueue.length,
+    queueItems: offlineQueue
+  });
+
+  // Función para limpiar cola de sincronización manualmente
+  const clearOfflineQueue = () => {
+    setOfflineQueue([]);
+  };
+
   const value = {
     data,
     addRecord,
@@ -218,6 +293,9 @@ export const DataProvider = ({ children }) => {
     filterData,
     getUniqueOperators,
     getUniqueCausas,
+    getOfflineStatus,
+    clearOfflineQueue,
+    syncOfflineData,
     totalRecords: data.length
   };
 

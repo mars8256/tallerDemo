@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Login from './components/Login';
 import DataGrid from './components/DataGrid';
 import MachineForm from './components/MachineForm';
+import PWAStatus from './components/PWAStatus';
 import { DataProvider } from './context/DataContext';
 import './App.css';
 
@@ -56,6 +57,7 @@ function App() {
     return (
       <div className="App">
         <Login onLogin={handleLogin} />
+        <PWAStatus />
       </div>
     );
   }
@@ -79,6 +81,7 @@ function App() {
             userType={userType}
           />
         )}
+        <PWAStatus />
       </div>
     </DataProvider>
   );
