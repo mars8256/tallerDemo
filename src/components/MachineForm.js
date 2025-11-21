@@ -240,15 +240,18 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
         <form onSubmit={handleSubmit} className="machine-form">
           <div className="form-group">
             <label htmlFor="maquina">Máquina:</label>
-            <input
-              type="text"
+            <select
               id="maquina"
               name="maquina"
               value={formData.maquina}
               onChange={handleChange}
               className={errors.maquina ? 'error' : ''}
-              placeholder="Ingrese el nombre/código de la máquina"
-            />
+            >
+              <option value="">Seleccione una máquina</option>
+              <option value="Cosechadora">Cosechadora</option>
+              <option value="Tractor">Tractor</option>
+              <option value="Volteo">Volteo</option>
+            </select>
             {errors.maquina && <span className="error-message">{errors.maquina}</span>}
           </div>
 
@@ -322,12 +325,12 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
               className={errors.causa ? 'error' : ''}
             >
               <option value="">Seleccione una causa</option>
-              <option value="mantenimiento">Mantenimiento</option>
-              <option value="reparacion">Reparación</option>
-              <option value="combustible">Combustible</option>
-              <option value="operacion">Operación Normal</option>
-              <option value="falla">Falla Mecánica</option>
-              <option value="clima">Condiciones Climáticas</option>
+              <option value="Mantenimiento Preventivo Diario">Mantenimiento Preventivo Diario</option>
+              <option value="Mantenimiento Correctivo">Mantenimiento Correctivo</option>
+              <option value="Planificado">Planificado</option>
+              <option value="Daño operativo">Daño operativo</option>
+              <option value="Cambio de cuchillas (elementos de desgaste)">Cambio de cuchillas (elementos de desgaste)</option>
+              
               <option value="otra">Otra</option>
             </select>
             {errors.causa && <span className="error-message">{errors.causa}</span>}
