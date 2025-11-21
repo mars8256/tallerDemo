@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 
 // URL del Google Apps Script
-const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsLdtO8wuNd2rcF2s73NLH4nrNKYsyIae7AU80xwseGIA8HJwPFLbC0scdZjSkfZy_ow/exec";
+const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziy4woTr1khTGHUcZYx5m6TmP_iGHF4EdqFZ53y4fEvkn80040OKqSEhWVq1gMMUKWcg/exec";
 
 const DataContext = createContext();
 
@@ -19,6 +19,8 @@ export const DataProvider = ({ children }) => {
     {
       id: 1,
       maquina: 'CAT-320D',
+      maquinaDescripcion: 'Tractor',
+      operando: 'Si',
       operador: 'Juan Pérez',
       horometro: 1250.5,
       finca: 'La Esperanza',
@@ -31,6 +33,8 @@ export const DataProvider = ({ children }) => {
     {
       id: 2,
       maquina: 'JD-8320R',
+      maquinaDescripcion: 'Cosechadora',
+      operando: 'No',
       operador: 'María García',
       horometro: 890.2,
       finca: 'El Progreso',
@@ -43,6 +47,8 @@ export const DataProvider = ({ children }) => {
     {
       id: 3,
       maquina: 'NH-T8.435',
+      maquinaDescripcion: 'Volteo',
+      operando: 'Si',
       operador: 'Carlos Rodríguez',
       horometro: 2150.8,
       finca: 'San José',
@@ -55,6 +61,8 @@ export const DataProvider = ({ children }) => {
     {
       id: 4,
       maquina: 'CAT-950M',
+      maquinaDescripcion: 'Tractor',
+      operando: 'No',
       operador: 'Ana López',
       horometro: 567.3,
       finca: 'La Esperanza',
@@ -67,6 +75,8 @@ export const DataProvider = ({ children }) => {
     {
       id: 5,
       maquina: 'JD-6120M',
+      maquinaDescripcion: 'Cosechadora',
+      operando: 'Si',
       operador: 'Juan Pérez',
       horometro: 1890.7,
       finca: 'El Progreso',
@@ -135,6 +145,7 @@ export const DataProvider = ({ children }) => {
     }
 
     try {
+      console.log('Enviando datos a Google Apps Script:', data);
       await fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors", // necesario por Apps Script
@@ -144,7 +155,7 @@ export const DataProvider = ({ children }) => {
         body: JSON.stringify(data),
       });
 
-      console.log('Datos enviados a Google Sheets exitosamente');
+      console.log('Datos enviados a Google Sheets exitosamente:', data);
       return true;
     } catch (error) {
       console.error('Error al enviar datos a Google Sheets:', error);
@@ -182,6 +193,8 @@ export const DataProvider = ({ children }) => {
     // Enviar a Google Sheets (sin esperar respuesta para no bloquear la UI)
     sendToGoogleSheet({
       maquina: formData.maquina,
+      maquinaDescripcion: formData.maquinaDescripcion,
+      operando: formData.operando,
       operador: formData.operador,
       horometro: formData.horometro,
       finca: formData.finca,
@@ -215,7 +228,17 @@ export const DataProvider = ({ children }) => {
     
     // Enviar actualización a Google Sheets (opcional, podrías omitir esto si no quieres actualizaciones en la hoja)
     sendToGoogleSheet({
-      ...updatedRecord,
+      maquina: formData.maquina,
+      maquinaDescripcion: formData.maquinaDescripcion,
+      operando: formData.operando,
+      operador: formData.operador,
+      horometro: formData.horometro,
+      finca: formData.finca,
+      lote: formData.lote,
+      causa: formData.causa,
+      horaInicio: formData.horaInicio,
+      tiempoEstimado: formData.tiempoEstimado,
+      fechaRegistro,
       isUpdate: true, // flag para indicar que es una actualización
       originalId: id
     });

@@ -427,3 +427,53 @@
 .form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
 }
+
+/* Estilos para radio buttons */
+.radio-group {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  transition: all 0.2s ease;
+}
+
+.radio-option:hover {
+  color: #3498db;
+}
+
+.radio-option input[type="radio"] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #3498db;
+}
+
+.radio-option span {
+  user-select: none;
+}
+
+/* Estilos para radio buttons en estado de error */
+.form-group.error .radio-option {
+  color: #e74c3c;
+}
+
+.form-group.error .radio-option input[type="radio"] {
+  accent-color: #e74c3c;
+}
+
+/* Responsive para radio buttons */
+@media (max-width: 768px) {
+  .radio-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

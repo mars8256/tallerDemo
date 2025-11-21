@@ -6,6 +6,8 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
   const { addRecord, updateRecord } = useData();
   const [formData, setFormData] = useState({
     maquina: '',
+    maquinaDescripcion: '',
+    operando: '',
     operador: '',
     horometro: '',
     finca: '',
@@ -20,6 +22,8 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
     if (editData) {
       setFormData({
         maquina: editData.maquina || '',
+        maquinaDescripcion: editData.maquinaDescripcion || '',
+        operando: editData.operando || '',
         operador: editData.operador || '',
         horometro: editData.horometro?.toString() || '',
         finca: editData.finca || '',
@@ -55,6 +59,8 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
     const newErrors = {};
     
     if (!formData.maquina.trim()) newErrors.maquina = 'La máquina es requerida';
+    if (!formData.maquinaDescripcion.trim()) newErrors.maquinaDescripcion = 'La descripción de máquina es requerida';
+    if (!formData.operando.trim()) newErrors.operando = 'Debe indicar si la maquinaria está operando';
     if (!formData.operador.trim()) newErrors.operador = 'El operador es requerido';
     if (!formData.horometro.trim()) newErrors.horometro = 'El horómetro es requerido';
     if (!formData.finca.trim()) newErrors.finca = 'La finca es requerida';
@@ -152,6 +158,8 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
           // Limpiar campos para nuevo registro
           setFormData({
             maquina: '',
+            maquinaDescripcion: '',
+            operando: '',
             operador: '',
             horometro: '',
             finca: '',
@@ -185,6 +193,8 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
   const handleReset = () => {
     setFormData({
       maquina: '',
+      maquinaDescripcion: '',
+      operando: '',
       operador: '',
       horometro: '',
       finca: '',
@@ -240,19 +250,60 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
         <form onSubmit={handleSubmit} className="machine-form">
           <div className="form-group">
             <label htmlFor="maquina">Máquina:</label>
-            <select
+            <input
+              type="text"
               id="maquina"
               name="maquina"
               value={formData.maquina}
               onChange={handleChange}
               className={errors.maquina ? 'error' : ''}
+              placeholder="Ingrese el nombre/código de la máquina"
+            />
+            {errors.maquina && <span className="error-message">{errors.maquina}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="maquinaDescripcion">Máquina Descripción:</label>
+            <select
+              id="maquinaDescripcion"
+              name="maquinaDescripcion"
+              value={formData.maquinaDescripcion}
+              onChange={handleChange}
+              className={errors.maquinaDescripcion ? 'error' : ''}
             >
-              <option value="">Seleccione una máquina</option>
+              <option value="">Seleccione un tipo de máquina</option>
               <option value="Cosechadora">Cosechadora</option>
               <option value="Tractor">Tractor</option>
               <option value="Volteo">Volteo</option>
             </select>
-            {errors.maquina && <span className="error-message">{errors.maquina}</span>}
+            {errors.maquinaDescripcion && <span className="error-message">{errors.maquinaDescripcion}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>¿Maquinaria está operando?</label>
+            <div className="radio-group">
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="operando"
+                  value="Si"
+                  checked={formData.operando === 'Si'}
+                  onChange={handleChange}
+                />
+                <span>Sí</span>
+              </label>
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="operando"
+                  value="No"
+                  checked={formData.operando === 'No'}
+                  onChange={handleChange}
+                />
+                <span>No</span>
+              </label>
+            </div>
+            {errors.operando && <span className="error-message">{errors.operando}</span>}
           </div>
 
           <div className="form-group">
