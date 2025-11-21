@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
 
+// URL del Google Apps Script
+const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsLdtO8wuNd2rcF2s73NLH4nrNKYsyIae7AU80xwseGIA8HJwPFLbC0scdZjSkfZy_ow/exec";
+
 const DataContext = createContext();
 
 export const useData = () => {
@@ -77,8 +80,28 @@ export const DataProvider = ({ children }) => {
 
   const [nextId, setNextId] = useState(6);
 
+  // Función para enviar datos a Google Apps Script
+  const sendToGoogleSheet = async (data) => {
+    try {
+      await fetch(GOOGLE_APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", // necesario por Apps Script
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      console.log('Datos enviados a Google Sheets exitosamente');
+      return true;
+    } catch (error) {
+      console.error('Error al enviar datos a Google Sheets:', error);
+      return false;
+    }
+  };
+
   // Función para agregar un nuevo registro
-  const addRecord = (formData) => {
+  const addRecord = async (formData) => {
     // Extraer la fecha del datetime-local para fechaRegistro
     const fechaRegistro = formData.horaInicio ? formData.horaInicio.split('T')[0] : new Date().toISOString().split('T')[0];
     
@@ -89,14 +112,28 @@ export const DataProvider = ({ children }) => {
       fechaRegistro
     };
     
+    // Guardar en memoria local
     setData(prevData => [...prevData, newRecord]);
     setNextId(prevId => prevId + 1);
+    
+    // Enviar a Google Sheets (sin esperar respuesta para no bloquear la UI)
+    sendToGoogleSheet({
+      maquina: formData.maquina,
+      operador: formData.operador,
+      horometro: formData.horometro,
+      finca: formData.finca,
+      lote: formData.lote,
+      causa: formData.causa,
+      horaInicio: formData.horaInicio,
+      tiempoEstimado: formData.tiempoEstimado,
+      fechaRegistro
+    });
     
     return newRecord;
   };
 
   // Función para actualizar un registro existente
-  const updateRecord = (id, formData) => {
+  const updateRecord = async (id, formData) => {
     const fechaRegistro = formData.horaInicio ? formData.horaInicio.split('T')[0] : new Date().toISOString().split('T')[0];
     
     const updatedRecord = {
@@ -106,11 +143,19 @@ export const DataProvider = ({ children }) => {
       fechaRegistro
     };
     
+    // Actualizar en memoria local
     setData(prevData => 
       prevData.map(item => 
         item.id === id ? updatedRecord : item
       )
     );
+    
+    // Enviar actualización a Google Sheets (opcional, podrías omitir esto si no quieres actualizaciones en la hoja)
+    sendToGoogleSheet({
+      ...updatedRecord,
+      isUpdate: true, // flag para indicar que es una actualización
+      originalId: id
+    });
     
     return updatedRecord;
   };

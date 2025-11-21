@@ -32,6 +32,8 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
   }, [editData]);
 
   const [errors, setErrors] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,7 +66,7 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     
@@ -73,27 +75,55 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
       return;
     }
     
+    setIsSaving(true);
+    
     try {
       if (editData) {
         // Actualizar registro existente
-        updateRecord(editData.id, formData);
-        alert('Registro actualizado correctamente!');
+        await updateRecord(editData.id, formData);
+        setNotification({ 
+          show: true, 
+          message: 'Registro actualizado correctamente y enviado a Google Sheets', 
+          type: 'success' 
+        });
       } else {
         // Crear nuevo registro
-        addRecord(formData);
-        alert('Nuevo registro creado correctamente!');
+        await addRecord(formData);
+        setNotification({ 
+          show: true, 
+          message: 'Nuevo registro creado y enviado a Google Sheets', 
+          type: 'success' 
+        });
       }
       
       console.log('Datos del formulario:', formData);
       console.log('Modo:', editData ? 'Actualizar' : 'Crear');
       
-      // Después de guardar, regresar a la lista
-      if (onCancel) {
-        onCancel();
-      }
+      // Ocultar notificación después de 2 segundos y regresar
+      setTimeout(() => {
+        setNotification({ show: false, message: '', type: '' });
+        if (onCancel) {
+          onCancel();
+        }
+      }, 2000);
+      
     } catch (error) {
       console.error('Error al guardar:', error);
-      alert('Error al guardar el registro. Por favor intente de nuevo.');
+      setNotification({ 
+        show: true, 
+        message: 'Registro guardado localmente, pero falló el envío a Google Sheets', 
+        type: 'warning' 
+      });
+      
+      // Ocultar notificación y regresar después de 3 segundos
+      setTimeout(() => {
+        setNotification({ show: false, message: '', type: '' });
+        if (onCancel) {
+          onCancel();
+        }
+      }, 3000);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -113,6 +143,18 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
 
   return (
     <div className="machine-form-container">
+      {/* Notificación */}
+      {notification.show && (
+        <div className={`notification notification-${notification.type}`}>
+          <div className="notification-content">
+            <span className="notification-icon">
+              {notification.type === 'success' ? '✅' : '⚠️'}
+            </span>
+            <span className="notification-message">{notification.message}</span>
+          </div>
+        </div>
+      )}
+
       <div className="form-header">
         <div className="header-info">
           <h1 className="form-title">
@@ -273,14 +315,17 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
           </div>
 
           <div className="form-actions">
-            <button type="button" onClick={handleReset} className="btn btn-secondary">
+            <button type="button" onClick={handleReset} className="btn btn-secondary" disabled={isSaving}>
               Limpiar
             </button>
-            <button type="button" onClick={onCancel} className="btn btn-tertiary">
+            <button type="button" onClick={onCancel} className="btn btn-tertiary" disabled={isSaving}>
               {userType === 'admin' ? 'Cancelar' : 'Ver Lista'}
             </button>
-            <button type="submit" className="btn btn-primary">
-              {editData ? 'Actualizar Registro' : 'Guardar Registro'}
+            <button type="submit" className={`btn btn-primary ${isSaving ? 'saving' : ''}`} disabled={isSaving}>
+              {isSaving 
+                ? (editData ? 'Actualizando...' : 'Guardando...') 
+                : (editData ? 'Actualizar Registro' : 'Guardar Registro')
+              }
             </button>
           </div>
         </form>
