@@ -8,6 +8,7 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
     maquina: '',
     maquinaDescripcion: '',
     operando: '',
+    falla: '',
     operador: '',
     horometro: '',
     finca: '',
@@ -24,6 +25,7 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
         maquina: editData.maquina || '',
         maquinaDescripcion: editData.maquinaDescripcion || '',
         operando: editData.operando || '',
+        falla: editData.falla || '',
         operador: editData.operador || '',
         horometro: editData.horometro?.toString() || '',
         finca: editData.finca || '',
@@ -61,6 +63,7 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
     if (!formData.maquina.trim()) newErrors.maquina = 'La máquina es requerida';
     if (!formData.maquinaDescripcion.trim()) newErrors.maquinaDescripcion = 'La descripción de máquina es requerida';
     if (!formData.operando.trim()) newErrors.operando = 'Debe indicar si la maquinaria está operando';
+    // falla es opcional, no requiere validación
     if (!formData.operador.trim()) newErrors.operador = 'El operador es requerido';
     if (!formData.horometro.trim()) newErrors.horometro = 'El horómetro es requerido';
     if (!formData.finca.trim()) newErrors.finca = 'La finca es requerida';
@@ -160,6 +163,7 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
             maquina: '',
             maquinaDescripcion: '',
             operando: '',
+            falla: '',
             operador: '',
             horometro: '',
             finca: '',
@@ -195,6 +199,7 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
       maquina: '',
       maquinaDescripcion: '',
       operando: '',
+      falla: '',
       operador: '',
       horometro: '',
       finca: '',
@@ -304,6 +309,20 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
               </label>
             </div>
             {errors.operando && <span className="error-message">{errors.operando}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="falla">Falla:</label>
+            <textarea
+              id="falla"
+              name="falla"
+              value={formData.falla}
+              onChange={handleChange}
+              className={errors.falla ? 'error' : ''}
+              placeholder="Descripción detallada de la falla (opcional)"
+              rows="4"
+            />
+            {errors.falla && <span className="error-message">{errors.falla}</span>}
           </div>
 
           <div className="form-group">

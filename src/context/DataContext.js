@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 
 // URL del Google Apps Script
-const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziy4woTr1khTGHUcZYx5m6TmP_iGHF4EdqFZ53y4fEvkn80040OKqSEhWVq1gMMUKWcg/exec";
+const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuoiXkmK9V6X4pC6bCA9s_hVr3Xq_4u1b0im-Fjody04l_Wb9zDVDZtTNBcB1bqeCUlA/exec";
 
 const DataContext = createContext();
 
@@ -21,6 +21,7 @@ export const DataProvider = ({ children }) => {
       maquina: 'CAT-320D',
       maquinaDescripcion: 'Tractor',
       operando: 'Si',
+      falla: 'Revisión de rutina del sistema hidráulico',
       operador: 'Juan Pérez',
       horometro: 1250.5,
       finca: 'La Esperanza',
@@ -35,6 +36,7 @@ export const DataProvider = ({ children }) => {
       maquina: 'JD-8320R',
       maquinaDescripcion: 'Cosechadora',
       operando: 'No',
+      falla: 'Fuga en el sistema de combustible detectada en la conexión principal',
       operador: 'María García',
       horometro: 890.2,
       finca: 'El Progreso',
@@ -49,6 +51,7 @@ export const DataProvider = ({ children }) => {
       maquina: 'NH-T8.435',
       maquinaDescripcion: 'Volteo',
       operando: 'Si',
+      falla: '',
       operador: 'Carlos Rodríguez',
       horometro: 2150.8,
       finca: 'San José',
@@ -63,6 +66,7 @@ export const DataProvider = ({ children }) => {
       maquina: 'CAT-950M',
       maquinaDescripcion: 'Tractor',
       operando: 'No',
+      falla: 'Problema en la transmisión, cambios bruscos al acelerar',
       operador: 'Ana López',
       horometro: 567.3,
       finca: 'La Esperanza',
@@ -77,6 +81,7 @@ export const DataProvider = ({ children }) => {
       maquina: 'JD-6120M',
       maquinaDescripcion: 'Cosechadora',
       operando: 'Si',
+      falla: 'Ruido extraño en el motor, requiere diagnóstico',
       operador: 'Juan Pérez',
       horometro: 1890.7,
       finca: 'El Progreso',
@@ -195,6 +200,7 @@ export const DataProvider = ({ children }) => {
       maquina: formData.maquina,
       maquinaDescripcion: formData.maquinaDescripcion,
       operando: formData.operando,
+      falla: formData.falla,
       operador: formData.operador,
       horometro: formData.horometro,
       finca: formData.finca,
@@ -231,6 +237,7 @@ export const DataProvider = ({ children }) => {
       maquina: formData.maquina,
       maquinaDescripcion: formData.maquinaDescripcion,
       operando: formData.operando,
+      falla: formData.falla,
       operador: formData.operador,
       horometro: formData.horometro,
       finca: formData.finca,
