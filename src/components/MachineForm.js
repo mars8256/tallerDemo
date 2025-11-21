@@ -89,39 +89,94 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
       } else {
         // Crear nuevo registro
         await addRecord(formData);
-        setNotification({ 
-          show: true, 
-          message: 'Nuevo registro creado y enviado a Google Sheets', 
-          type: 'success' 
-        });
+        
+        // Manejo específico para técnico
+        if (userType === 'tecnico') {
+          // Limpiar campos después de guardar exitosamente
+          setFormData({
+            maquina: '',
+            operador: '',
+            horometro: '',
+            finca: '',
+            lote: '',
+            causa: '',
+            horaInicio: '',
+            tiempoEstimado: ''
+          });
+          setErrors({});
+          
+          // Mostrar mensaje de éxito y preguntar si desea continuar
+          const continuar = window.confirm(
+            'Registro guardado correctamente!\n\n¿Desea registrar otro dato?'
+          );
+          
+          if (!continuar) {
+            // Si no desea continuar, cerrar sesión
+            onLogout();
+            return;
+          }
+          // Si desea continuar, los campos ya están limpios
+        } else {
+          // Para admin, mantener comportamiento original
+          setNotification({ 
+            show: true, 
+            message: 'Nuevo registro creado y enviado a Google Sheets', 
+            type: 'success' 
+          });
+          
+          setTimeout(() => {
+            setNotification({ show: false, message: '', type: '' });
+            if (onCancel) {
+              onCancel();
+            }
+          }, 2000);
+        }
       }
       
       console.log('Datos del formulario:', formData);
       console.log('Modo:', editData ? 'Actualizar' : 'Crear');
       
-      // Ocultar notificación después de 2 segundos y regresar
-      setTimeout(() => {
-        setNotification({ show: false, message: '', type: '' });
-        if (onCancel) {
-          onCancel();
-        }
-      }, 2000);
-      
     } catch (error) {
       console.error('Error al guardar:', error);
-      setNotification({ 
-        show: true, 
-        message: 'Registro guardado localmente, pero falló el envío a Google Sheets', 
-        type: 'warning' 
-      });
       
-      // Ocultar notificación y regresar después de 3 segundos
-      setTimeout(() => {
-        setNotification({ show: false, message: '', type: '' });
-        if (onCancel) {
-          onCancel();
+      if (userType === 'tecnico' && !editData) {
+        // Para técnico creando nuevo registro, mostrar mensaje y preguntar
+        const continuar = window.confirm(
+          'Registro guardado localmente (falló conexión con Google Sheets)\n\n¿Desea registrar otro dato?'
+        );
+        
+        if (!continuar) {
+          onLogout();
+          return;
+        } else {
+          // Limpiar campos para nuevo registro
+          setFormData({
+            maquina: '',
+            operador: '',
+            horometro: '',
+            finca: '',
+            lote: '',
+            causa: '',
+            horaInicio: '',
+            tiempoEstimado: ''
+          });
+          setErrors({});
         }
-      }, 3000);
+      } else {
+        // Para admin o edición, mantener comportamiento original
+        setNotification({ 
+          show: true, 
+          message: 'Registro guardado localmente, pero falló el envío a Google Sheets', 
+          type: 'warning' 
+        });
+        
+        setTimeout(() => {
+          setNotification({ show: false, message: '', type: '' });
+          if (onCancel) {
+            onCancel();
+          }
+        }, 3000);
+      }
     } finally {
       setIsSaving(false);
     }
@@ -171,8 +226,8 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
             </button>
           )}
           {userType === 'tecnico' && (
-            <button onClick={onCancel} className="cancel-btn">
-              Ver Registros
+            <button onClick={onLogout} className="cancel-btn">
+              Salir
             </button>
           )}
           <button onClick={onLogout} className="logout-btn">
@@ -318,8 +373,8 @@ function MachineForm({ onLogout, onCancel, editData = null, userType }) {
             <button type="button" onClick={handleReset} className="btn btn-secondary" disabled={isSaving}>
               Limpiar
             </button>
-            <button type="button" onClick={onCancel} className="btn btn-tertiary" disabled={isSaving}>
-              {userType === 'admin' ? 'Cancelar' : 'Ver Lista'}
+            <button type="button" onClick={userType === 'admin' ? onCancel : onLogout} className="btn btn-tertiary" disabled={isSaving}>
+              {userType === 'admin' ? 'Cancelar' : 'Salir'}
             </button>
             <button type="submit" className={`btn btn-primary ${isSaving ? 'saving' : ''}`} disabled={isSaving}>
               {isSaving 

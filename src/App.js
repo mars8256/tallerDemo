@@ -44,13 +44,11 @@ function App() {
 
   const handleCancel = () => {
     setEditingData(null);
-    // Determinar a dónde regresar según el tipo de usuario
+    // Solo admin puede regresar al grid
     if (userType === 'admin') {
       setCurrentView('grid'); // Admin regresa al grid
-    } else if (userType === 'tecnico') {
-      // Técnico puede ir al grid para ver sus registros o mantenerse en form
-      setCurrentView('grid'); // Por ahora regresa al grid también
     }
+    // Técnico no tiene acceso al grid, por lo que permanece en form o se desconecta
   };
 
   // Si no está autenticado, mostrar login
@@ -66,7 +64,7 @@ function App() {
   return (
     <DataProvider>
       <div className="App">
-        {currentView === 'grid' ? (
+        {currentView === 'grid' && userType === 'admin' ? (
           <DataGrid 
             onAddNew={handleAddNew}
             onEdit={handleEdit}
